@@ -5,7 +5,7 @@ A sharp, tactical Discord bot written in Python that tracks your private **Adven
 ## ✨ Features
 
 * **Daily Mission Briefing:** Automatically checks the leaderboard every day at **8:00 AM UTC**. If a squad member hasn't completed Part 2 of the daily puzzle, they get tagged for being 'slow on the draw'.
-* **Tactical AI Assistant:** Ping the bot (`@CactiBot`) to chat with a helpful (and slightly prickly) cactus assistant powered by **Gemini 2.5 Flash**.
+* **Tactical AI Assistant:** Ping the bot (`@Cactus_Bot`) to chat with a helpful (and slightly prickly) cactus assistant powered by **Gemini 2.5 Flash**.
 * **Slash Commands:** Modern, easy-to-use Discord commands (`/`).
 * **Countdown:** Check exactly how much time is left until the next puzzle drop.
 * **Secure:** Uses environment variables to keep your Session Cookie, Tokens, and API Keys secure.
@@ -23,7 +23,7 @@ A sharp, tactical Discord bot written in Python that tracks your private **Adven
 ### 1. Clone or Download
 Download this repository to your local machine. Ensure you have the following folder structure:
 ```text
-/CactiBot
+/Cactus_Bot
 ├── bot.py
 ├── config.py
 ├── requirements.txt
@@ -82,7 +82,7 @@ This bot is ready for **Discloud** hosting.
 
 1.  Make sure `discloud.config` is present in the folder:
     ```text
-    NAME=CactiBot
+    NAME=Cactus_Bot
     TYPE=bot
     MAIN=bot.py
     RAM=100
