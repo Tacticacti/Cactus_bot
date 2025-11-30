@@ -1,10 +1,10 @@
 import discord
 from discord.ext import tasks, commands
 import requests
-import datetime
 import json
 import os
 from dotenv import load_dotenv
+import datetime
 
 # Load secrets from a .env file
 load_dotenv()
@@ -34,7 +34,10 @@ def get_leaderboard_data():
 @tasks.loop(time=check_time)
 async def daily_reminder():
     # Only run this loop during Advent (Dec 1 - Dec 25)
-    today = datetime.datetime.now()
+    # FIX: Use datetime.timezone and datetime.timedelta
+    est = datetime.timezone(datetime.timedelta(hours=-5))
+    today = datetime.datetime.now(est) # FIX: Use datetime.datetime.now
+    
     if today.month != 12 or today.day > 25:
         return
 
@@ -70,6 +73,23 @@ async def daily_reminder():
             f"👉 **{slacker_names}**\n"
             f"Go get 'em: https://adventofcode.com/{YEAR}/day/{today.day}"
         )
+
+# --- ADD THIS NEW COMMAND BELOW ---
+@bot.command()
+async def next(ctx):
+    # Advent of Code always unlocks at Midnight EST (UTC-5)
+    est = datetime.timezone(datetime.timedelta(hours=-5))
+    now = datetime.datetime.now(est)
+    
+    # Target is the next midnight
+    target = (now + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Calculate duration
+    remaining = target - now
+    hours, remainder = divmod(int(remaining.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    
+    await ctx.send(f"⏳ **Next Puzzle Unlock:** {hours}h {minutes}m {seconds}s")
 
 @bot.event
 async def on_ready():
