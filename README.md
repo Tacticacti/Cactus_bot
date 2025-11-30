@@ -1,13 +1,14 @@
-"# 🎄 Advent of Code Discord Bot
+# 🌵 TacticalCacti Bot
 
-A festive Discord bot written in Python that tracks your private **Advent of Code** leaderboard. It sends daily reminders to players who haven't completed the day's puzzle, includes utility commands, and features an **AI Elf Assistant** powered by Google Gemini.
+A sharp, tactical Discord bot written in Python that tracks your private **Advent of Code** leaderboard. It keeps your squad on point with daily reminders and features a **Tactical AI Assistant** powered by Google Gemini.
 
 ## ✨ Features
 
-* **Daily 'Shame' Reminder:** Automatically checks the leaderboard every day at **8:00 AM UTC**. If a member hasn't completed Part 2 of the daily puzzle, they get tagged in the chat.
-* **AI Elf Assistant:** Ping the bot to chat with a helpful elf assistant powered by **Gemini 1.5 Flash**.
+* **Daily Mission Briefing:** Automatically checks the leaderboard every day at **8:00 AM UTC**. If a squad member hasn't completed Part 2 of the daily puzzle, they get tagged for being 'slow on the draw'.
+* **Tactical AI Assistant:** Ping the bot (`@CactiBot`) to chat with a helpful (and slightly prickly) cactus assistant powered by **Gemini 2.5 Flash**.
 * **Slash Commands:** Modern, easy-to-use Discord commands (`/`).
-* **Countdown:** Check exactly how much time is left until the next puzzle unlocks.
+* **Countdown:** Check exactly how much time is left until the next puzzle drop.
+* **Secure:** Uses environment variables to keep your Session Cookie, Tokens, and API Keys secure.
 * **Modular Code:** Built using `cogs` for easy maintenance and expansion.
 
 ## 🛠️ Prerequisites
@@ -22,7 +23,7 @@ A festive Discord bot written in Python that tracks your private **Advent of Cod
 ### 1. Clone or Download
 Download this repository to your local machine. Ensure you have the following folder structure:
 \`\`\`text
-/AoCBot
+/CactiBot
 ├── bot.py
 ├── config.py
 ├── requirements.txt
@@ -73,7 +74,7 @@ python bot.py
 | \`/next\` | Shows a countdown timer to the next puzzle unlock (Midnight EST). |
 | \`/check_api\` | Verifies that the bot can connect to the AoC Leaderboard successfully. |
 | \`/test\` | Simple connectivity check to ensure the bot is online. |
-| \`@AoCBot [message]\` | Chat with the AI Elf Assistant. |
+| \`@CactiBot [message]\` | Chat with the Tactical AI Assistant. |
 
 ## ☁️ Deployment (Discloud)
 
@@ -81,7 +82,7 @@ This bot is ready for **Discloud** hosting.
 
 1.  Make sure \`discloud.config\` is present in the folder:
     \`\`\`text
-    NAME=AoCBot
+    NAME=CactiBot
     TYPE=bot
     MAIN=bot.py
     RAM=100
@@ -102,4 +103,3 @@ Feel free to fork this project and add features like:
 
 ## ⚖️ Disclaimer
 This project is not affiliated with Advent of Code or Eric Wastl. Please respect the [Advent of Code automation guidelines](https://www.reddit.com/r/adventofcode/wiki/faqs/automation) (request data max once every 15 minutes).
-"
