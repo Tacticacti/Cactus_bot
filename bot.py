@@ -3,9 +3,10 @@ from discord.ext import commands
 import config
 import asyncio
 
-# Setup Bot Class
+# Define the Bot Class
 class AoCBot(commands.Bot):
     def __init__(self):
+        # We need message_content intent so the bot can read chats to reply to pings
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(command_prefix="!", intents=intents)
@@ -14,10 +15,12 @@ class AoCBot(commands.Bot):
         # This function runs automatically when the bot starts
         # We load our "Cogs" (extensions) here
         
-        # List of extension files to load (note the dots instead of slashes)
+        # List of extension files to load
+        # Ensure you have the folders: cogs/ and utils/
         extensions = [
-            'cogs.general',
-            'cogs.scheduler'
+            'cogs.general',   # Slash commands like /next
+            'cogs.scheduler', # Daily 8am reminder
+            'cogs.chat'       # Gemini AI replies
         ]
         
         for ext in extensions:
@@ -27,7 +30,7 @@ class AoCBot(commands.Bot):
             except Exception as e:
                 print(f"❌ Failed to load extension {ext}: {e}")
 
-        # Sync slash commands with Discord
+        # Sync slash commands with Discord so they show up in the menu
         try:
             synced = await self.tree.sync()
             print(f"✅ Synced {len(synced)} slash commands")
@@ -38,7 +41,7 @@ class AoCBot(commands.Bot):
         print(f'🚀 Logged in as {self.user} (ID: {self.user.id})')
         print('------')
 
-# Run the Bot
+# Main Execution
 async def main():
     bot = AoCBot()
     async with bot:
