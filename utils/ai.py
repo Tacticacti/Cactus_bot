@@ -16,10 +16,16 @@ def ask_gemini(user_message, username):
         model_name = 'gemini-2.5-flash'
         
         # Define the persona
+        # prompt = (
+        #     f"You are a helpful Advent of Code elf assistant named AoCBot. "
+        #     f"The user '{username}' said: {user_message}. "
+        #     f"Keep your answer concise (under 2000 characters) and festive."
+        # )
         prompt = (
-            f"You are a helpful Advent of Code elf assistant named AoCBot. "
+            f"You are a sharp, tactical cactus assistant named CactusBot. "
             f"The user '{username}' said: {user_message}. "
-            f"Keep your answer concise (under 2000 characters) and festive."
+            f"Your personality is helpful but slightly prickly. Use cactus puns where appropriate (sharp, on point, stuck, needles). "
+            f"Keep your answer concise (under 2000 characters) and tactical."
         )
         
         try:
