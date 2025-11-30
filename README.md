@@ -1,11 +1,11 @@
-# 🎄 Advent of Code Discord Bot
+"# 🎄 Advent of Code Discord Bot
 
 A festive Discord bot written in Python that tracks your private **Advent of Code** leaderboard. It sends daily reminders to players who haven't completed the day's puzzle, includes utility commands, and features an **AI Elf Assistant** powered by Google Gemini.
 
 ## ✨ Features
 
 * **Daily 'Shame' Reminder:** Automatically checks the leaderboard every day at **8:00 AM UTC**. If a member hasn't completed Part 2 of the daily puzzle, they get tagged in the chat.
-* **AI Elf Assistant:** Ping the bot (`@AoCBot`) to chat with a helpful elf assistant powered by **Gemini 1.5 Flash**.
+* **AI Elf Assistant:** Ping the bot to chat with a helpful elf assistant powered by **Gemini 1.5 Flash**.
 * **Slash Commands:** Modern, easy-to-use Discord commands (`/`).
 * **Countdown:** Check exactly how much time is left until the next puzzle unlocks.
 * **Modular Code:** Built using `cogs` for easy maintenance and expansion.
@@ -102,3 +102,4 @@ Feel free to fork this project and add features like:
 
 ## ⚖️ Disclaimer
 This project is not affiliated with Advent of Code or Eric Wastl. Please respect the [Advent of Code automation guidelines](https://www.reddit.com/r/adventofcode/wiki/faqs/automation) (request data max once every 15 minutes).
+"
