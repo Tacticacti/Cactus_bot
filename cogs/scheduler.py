@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 import datetime
 import config
-from utils import aoc
+from utils import aoc, storage
 
 class Scheduler(commands.Cog):
     def __init__(self, bot):
@@ -33,42 +33,46 @@ class Scheduler(commands.Cog):
 
         day_str = str(today.day)
         
-        slackers = []      # 0 stars (MIA)
-        in_progress = []   # 1 star (In the Field)
-        
-        # Analyze the Squad
-        members = data.get('members', {})
-        for member_id, details in members.items():
-            name = details['name'] or f"Anon #{member_id}"
-            
-            # Get the stars for today
-            day_data = details['completion_day_level'].get(day_str, {})
-            star_count = len(day_data) 
-
-            if star_count == 0:
-                slackers.append(name)
-            elif star_count == 1:
-                # STRICT MODE: 1 star is not enough! They are still "In the Field"
-                in_progress.append(name)
+        slackers = []      # 0 stars
+        in_progress = []   # 1 star
 
         # Get the target channel
         channel = self.bot.get_channel(config.CHANNEL_ID)
         
-        # If running manually, reply in the current channel
         if manual_interaction:
             channel = manual_interaction.channel
-            await manual_interaction.response.send_message("✅ Manual check initiated.", ephemeral=True)
 
         if not channel:
             print(f"❌ Error: Could not find channel {config.CHANNEL_ID}")
             return
 
-        # --- REPORT GENERATION ---
+        members = data.get('members', {})
+        for member_id, details in members.items():
+            # Get the raw AoC name
+            raw_name = details['name'] or f"Anon #{member_id}"
+            
+            # Convert to Ping if possible using our new storage util
+            display_name = storage.get_discord_mention(raw_name)
+            
+            day_data = details['completion_day_level'].get(day_str, {})
+            star_count = len(day_data) 
+
+            if star_count == 0:
+                slackers.append(display_name)
+            elif star_count == 1:
+                # STRICT MODE: 1 star is "In the Field"
+                in_progress.append(display_name)
+
+        # --- SEND REPORT ---
         
+        if manual_interaction:
+            await manual_interaction.response.send_message("✅ Manual check initiated.", ephemeral=True)
+
         if not slackers and not in_progress:
             await channel.send(f"🎉 **Day {day_str} Debrief:** Mission Accomplished! The entire squad has secured 2 stars.")
             return
 
+        # Build the message
         msg = f"🌵 **Day {day_str} Mission Report**\n"
         
         if slackers:
@@ -81,7 +85,6 @@ class Scheduler(commands.Cog):
         
         await channel.send(msg)
 
-    # --- AUTOMATIC TIMER (8:00 AM UTC) ---
     @tasks.loop(time=config.CHECK_TIME)
     async def daily_reminder(self):
         await self.run_mission_check()
@@ -90,7 +93,6 @@ class Scheduler(commands.Cog):
     async def before_daily_reminder(self):
         await self.bot.wait_until_ready()
 
-    # --- MANUAL TRIGGER ---
     @app_commands.command(name="mission_report", description="Force a manual leaderboard check right now.")
     async def mission_report(self, interaction: discord.Interaction):
         await self.run_mission_check(manual_interaction=interaction)
