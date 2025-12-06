@@ -1,10 +1,28 @@
 import discord
 from discord.ext import commands
 from utils import ai
+from discord.ext import tasks
 
 class Chat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self._cooldowns = {}
+        # Start a cleanup task
+        self.cleanup_task.start()
+    
+    def cog_unload(self):
+        self.cleanup_task.cancel()
+
+    @tasks.loop(minutes=30)
+    async def cleanup_task(self):
+        """Removes old entries from the cooldown dictionary to save RAM"""
+        current_time = time.time()
+        # Keep only users who chatted in the last 60 seconds
+        self._cooldowns = {
+            user_id: timestamp 
+            for user_id, timestamp in self._cooldowns.items() 
+            if current_time - timestamp < 60
+        }
 
     @commands.Cog.listener()
     async def on_message(self, message):

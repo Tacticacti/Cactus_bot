@@ -9,8 +9,7 @@ class AoCBot(commands.Bot):
         # We need message_content intent so the bot can read chats to reply to pings
         intents = discord.Intents.default()
         intents.message_content = True
-        super().__init__(command_prefix="!", intents=intents)
-
+        super().__init__(command_prefix="!", intents=intents, max_messages=None)
     async def setup_hook(self):
         # This function runs automatically when the bot starts
         # We load our "Cogs" (extensions) here
