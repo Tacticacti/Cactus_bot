@@ -8,24 +8,18 @@ from utils import aoc, storage
 class Scheduler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.daily_reminder.start() # Start the loop immediately when loaded
-        self.daily_leaderboard.start() # Start the new loop
+        self.daily_reminder.start()
+        self.daily_leaderboard.start()
 
     def cog_unload(self):
-        self.daily_reminder.cancel() # Stop loop if this file is unloaded
+        self.daily_reminder.cancel()
         self.daily_leaderboard.cancel()
 
+    # --- SHARED: MISSION CHECK (SHAME LIST) ---
     async def run_mission_check(self, manual_interaction=None):
         # Timezone logic (UTC-5 for EST)
         est = datetime.timezone(datetime.timedelta(hours=-5))
         today = datetime.datetime.now(est)
-
-        # Check if it's Advent Season
-        # (Commented out for testing, uncomment for real production if you want)
-        if today.month != 12 or today.day > 25:
-            if manual_interaction:
-                await manual_interaction.response.send_message("💤 Mission Aborted: Not currently Advent season.", ephemeral=True)
-            return
 
         data = aoc.get_leaderboard_data()
         if not data:
@@ -65,8 +59,6 @@ class Scheduler(commands.Cog):
                 # STRICT MODE: 1 star is "In the Field"
                 in_progress.append(display_name)
 
-        # --- SEND REPORT ---
-        
         if manual_interaction:
             await manual_interaction.response.send_message("✅ Manual check initiated.", ephemeral=True)
 
@@ -87,8 +79,8 @@ class Scheduler(commands.Cog):
         
         await channel.send(msg)
 
-    # --- NEW: LEADERBOARD LOGIC ---
-    async def run_leaderboard_post(self, manual_interaction=None):
+    # --- SHARED: LEADERBOARD POST ---
+    async def run_leaderboard_post(self, manual_interaction=None, custom_title=None):
         data = aoc.get_leaderboard_data()
         if not data:
             if manual_interaction:
@@ -105,8 +97,8 @@ class Scheduler(commands.Cog):
             channel = manual_interaction.channel
             await manual_interaction.response.send_message("✅ Leaderboard requested.", ephemeral=True)
 
-        # Build Message
-        msg = "🏆 **Tactical Standings (Current Score)**\n"
+        title = custom_title or "🏆 **Tactical Standings (Current Score)**"
+        msg = f"{title}\n"
         msg += "-----------------------------------\n"
         
         medals = ["🥇", "🥈", "🥉"]
@@ -124,17 +116,46 @@ class Scheduler(commands.Cog):
 
         await channel.send(msg)
 
+    # --- TIMER 1: DAILY SHAME (8:00 UTC) ---
     @tasks.loop(time=config.CHECK_TIME)
     async def daily_reminder(self):
-        await self.run_mission_check()
+        est = datetime.timezone(datetime.timedelta(hours=-5))
+        today = datetime.datetime.now(est)
 
-# 2. Daily Leaderboard (23:55 UTC)
-    # Note: We need to define this time in config.py or here
-    # 23:55 UTC = 6:55 PM EST
+        # --- END OF SEASON LOGIC (Dec 13th) ---
+        # The event runs Dec 1 - Dec 12. So Dec 13th is the day after.
+        if today.month == 12 and today.day == 13:
+            await self.run_leaderboard_post(custom_title="🎄✨ **FINAL SEASON REPORT: MISSION ACCOMPLISHED** ✨🎄")
+            
+            channel = self.bot.get_channel(config.CHANNEL_ID)
+            if channel:
+                await channel.send(
+                    "🌵 **At ease, soldiers!** The 12-Day Advent season has concluded.\n"
+                    "Automated daily directives are now suspended. Rest up for next year.\n\n"
+                    "*CactiBot out.*"
+                )
+            
+            self.daily_reminder.cancel()
+            self.daily_leaderboard.cancel()
+            print("🏁 Season ended. Loops cancelled.")
+            return
+        # --------------------------------------
+
+        # Regular Season Logic (Dec 1-12)
+        if today.month == 12 and today.day <= 12:
+            await self.run_mission_check()
+
+    # --- TIMER 2: DAILY RECAP (23:55 UTC) ---
     leaderboard_time = datetime.time(hour=23, minute=55, tzinfo=datetime.timezone.utc)
+
     @tasks.loop(time=leaderboard_time)
     async def daily_leaderboard(self):
-        await self.run_leaderboard_post()
+        est = datetime.timezone(datetime.timedelta(hours=-5))
+        today = datetime.datetime.now(est)
+        
+        # Only run recap during the active 12 days
+        if today.month == 12 and today.day <= 12:
+            await self.run_leaderboard_post()
 
     @daily_reminder.before_loop
     async def before_daily_reminder(self):
